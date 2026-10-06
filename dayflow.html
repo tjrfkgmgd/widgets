@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dayflow</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fef9f7;
+  --pink:#ffd6e0; --pink-deep:#f9a8c0; --pink-text:#d46a8a;
+  --blue:#d6e8ff; --blue-text:#6a9ad4;
+  --mint:#d6f2e0; --mint-text:#5da87a;
+  --lav:#e8dcff; --lav-text:#9a7ad4;
+  --peach:#ffe8d6; --peach-text:#d49a6a;
+  --ink:#7a5a62; --muted:#c4a8ae;
+  --card:#ffffff;
+}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;line-height:1.6;}
+.wrap{max-width:900px;margin:0 auto;padding:20px;}
+.header{text-align:center;margin-bottom:24px;}
+.header h1{font-size:22px;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.header p{font-size:12px;color:var(--muted);}
+.tabs{display:flex;gap:8px;justify-content:center;margin-bottom:20px;}
+.tab{padding:10px 24px;border-radius:999px;border:none;background:var(--card);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:.2s;}
+.tab.on{background:var(--pink);color:#fff;box-shadow:0 4px 16px rgba(249,168,192,.3);}
+.panel{display:none;}
+.panel.on{display:block;animation:fadeIn .3s;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.layout{display:grid;grid-template-columns:220px 1fr;gap:16px;}
+.order{background:var(--card);border-radius:24px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.03);}
+.order h3{font-size:12px;font-weight:800;color:var(--muted);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.order h3 .n{background:var(--pink);color:#fff;font-size:11px;padding:2px 10px;border-radius:999px;}
+.quads{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.quad{border-radius:24px;padding:18px;min-height:190px;transition:.2s;}
+.quad h4{font-size:13px;font-weight:800;margin-bottom:4px;}
+.quad .s{font-size:10px;opacity:.6;margin-bottom:12px;}
+.q1{background:var(--pink);} .q1 h4{color:var(--pink-text);}
+.q2{background:var(--blue);} .q2 h4{color:var(--blue-text);}
+.q3{background:var(--mint);} .q3 h4{color:var(--mint-text);}
+.q4{background:var(--lav);} .q4 h4{color:var(--lav-text);}
+.quad.dragover{transform:scale(1.02);box-shadow:0 8px 24px rgba(0,0,0,.08);}
+.card{background:var(--card);border-radius:16px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;cursor:grab;box-shadow:0 2px 10px rgba(0,0,0,.04);font-size:12.5px;position:relative;transition:.15s;border:1px solid rgba(0,0,0,.02);}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.07);}
+.card.dragging{opacity:.4;}
+.card.done{opacity:.45;}
+.card.done .t{text-decoration:line-through;}
+.card .g{color:var(--muted);opacity:.4;font-size:10px;letter-spacing:-1px;}
+.card .t{flex:1;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.card .n{font-size:10px;font-weight:800;color:var(--pink-text);background:var(--pink);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card .a{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:none;gap:6px;background:#fff;padding:6px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.1);}
+.card:hover .a{display:flex;}
+.card .a button{border:none;border-radius:10px;padding:6px 12px;font-size:10px;font-weight:700;cursor:pointer;background:var(--bg);color:var(--ink);}
+.card .a button:hover{background:var(--pink);color:#fff;}
+.quick{display:flex;gap:10px;margin-top:16px;}
+.quick input{flex:1;padding:14px 18px;border-radius:999px;border:2px solid transparent;background:var(--bg);font-size:13px;outline:none;transition:.2s;}
+.quick input:focus{border-color:var(--pink);background:#fff;}
+.quick input::placeholder{color:var(--muted);}
+.quick button{width:48px;height:48px;border-radius:50%;border:none;background:var(--pink-deep);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 4px 14px rgba(249,168,192,.4);transition:.2s;flex-shrink:0;}
+.quick button:hover{transform:scale(1.08) rotate(90deg);}
+.tblocks{display:flex;flex-direction:column;gap:14px;}
+.tb{border-radius:24px;padding:18px;background:var(--card);box-shadow:0 4px 20px rgba(0,0,0,.03);}
+.tb h4{font-size:12px;font-weight:800;color:var(--muted);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.tb h4 .c{background:var(--bg);padding:2px 10px;border-radius:999px;font-size:11px;}
+.tb.dragover{box-shadow:0 8px 28px rgba(249,168,192,.2);}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.st{border-radius:24px;padding:28px;text-align:center;}
+.st .v{font-size:40px;font-weight:800;margin-bottom:6px;}
+.st .l{font-size:12px;font-weight:600;opacity:.7;}
+.st.p{background:var(--pink);} .st.p .v{color:var(--pink-text);}
+.st.b{background:var(--blue);} .st.b .v{color:var(--blue-text);}
+#setup{text-align:center;padding:60px 24px;}
+#setup .e{font-size:48px;margin-bottom:16px;}
+#setup h2{font-size:22px;font-weight:800;margin-bottom:10px;}
+#setup p{color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:28px;}
+#setup .b{max-width:340px;margin:0 auto;display:flex;flex-direction:column;gap:12px;}
+#setup input{padding:16px 20px;border-radius:999px;border:2px solid var(--bg);background:var(--card);font-size:13px;outline:none;box-shadow:0 2px 12px rgba(0,0,0,.04);transition:.2s;}
+#setup input:focus{border-color:var(--pink);}
+#setup button{padding:16px;border-radius:999px;border:none;background:var(--ink);color:#fff;font-weight:800;font-size:14px;cursor:pointer;transition:.2s;}
+#setup button:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15);}
+#err{background:#ffeef2;border-radius:18px;padding:14px 18px;font-size:12px;color:#d46a8a;line-height:1.7;text-align:left;}
+.hidden{display:none!important;}
+.empty{text-align:center;color:var(--muted);font-size:12px;padding:24px;opacity:.5;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:14px 28px;border-radius:999px;font-size:13px;font-weight:700;opacity:0;transition:.3s;pointer-events:none;z-index:99;box-shadow:0 8px 28px rgba(0,0,0,.18);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-4px);}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-thumb{background:var(--pink);border-radius:99px;}
+@media(max-width:640px){.layout{grid-template-columns:1fr;}.quads{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="setup">
+    <div class="e">🌷</div>
+    <h2>dayflow</h2>
+    <p>노션 토큰을 한 번만 입력하면 돼요<br>예쁜 하루를 시작해봐요 🤍</p>
+    <div class="b">
+      <input type="password" id="tk" placeholder="Notion 토큰">
+      <button id="go">연결하기 🩷</button>
+      <div id="err" class="hidden"></div>
+    </div>
+  </div>
+  <div id="main" class="hidden">
+    <div class="header"><h1>🌷 dayflow</h1><p id="dt"></p></div>
+    <div class="tabs">
+      <button class="tab on" data-p="m">MATRIX</button>
+      <button class="tab" data-p="f">FLOW</button>
+      <button class="tab" data-p="r">REVIEW</button>
+    </div>
+    <div class="panel on" id="pm">
+      <div class="layout">
+        <div class="order" data-q="order">
+          <h3>ORDER <span class="n" id="oc">0</span></h3>
+          <div id="ocards"></div>
+          <div class="quick"><input id="qi" placeholder="할 일 추가..."><button id="qa">+</button></div>
+        </div>
+        <div class="quads">
+          <div class="quad q1" data-q="q1"><h4>🌸 일단 이것부터</h4><div class="s">중요 · 긴급</div><div class="cards"></div></div>
+          <div class="quad q2" data-q="q2"><h4>💙 시간 빼두기</h4><div class="s">중요 · 여유</div><div class="cards"></div></div>
+          <div class="quad q3" data-q="q3"><h4>🌿 얼른 처리하기</h4><div class="s">가벼움 · 긴급</div><div class="cards"></div></div>
+          <div class="quad q4" data-q="q4"><h4>💜 패스</h4><div class="s">가벼움 · 여유</div><div class="cards"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="pf">
+      <div class="layout">
+        <div class="order"><h3>ORDER <span class="n" id="oc2">0</span></h3><div id="ocards2"></div></div>
+        <div class="tblocks">
+          <div class="tb" data-t="☀️ 오전 09:00–14:00"><h4>☀️ 오전 <span class="c">0</span></h4><div class="cards"></div></div>
+          <div class="tb" data-t="🌤 오후 14:00–19:00"><h4>🌤 오후 <span class="c">0</span></h4><div class="cards"></div></div>
+          <div class="tb" data-t="🌙 밤 19:00–"><h4>🌙 밤 <span class="c">0</span></h4><div class="cards"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="pr">
+      <div class="stats">
+        <div class="st p"><div class="v" id="stT">0</div><div class="l">전체 할 일</div></div>
+        <div class="st b"><div class="v" id="stD">0</div><div class="l">완료 🎉</div></div>
+      </div>
+      <div id="rl"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const API='https://api.notion.com/v1',VER='2022-06-28',DBID='c50c55d8-9436-4edb-5fab-3c76b5e166f';
+let TK='';try{TK=localStorage.getItem('nf_token')||'';}catch(e){}
+let tasks=[],drag=null;
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200);};
+(function(){const d=new Date();$('#dt').textContent=(d.getMonth()+1)+'월 '+d.getDate()+'일, 오늘도 화이팅 🌷';})();
+$$('.tab').forEach(b=>b.onclick=()=>{$$('.tab').forEach(x=>x.classList.remove('on'));b.classList.add('on');$$('.panel').forEach(p=>p.classList.remove('on'));$('#p'+b.dataset.p).classList.add('on');if(b.dataset.p==='r')rRev();});
+const H=()=>({'Authorization':'Bearer '+TK,'Notion-Version':VER,'Content-Type':'application/json'});
+async function api(p,m='GET',b){const r=await fetch(API+p,{method:m,headers:H(),body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error(r.status);return r.json();}
+const tn=p=>{try{return p.properties['할 일'].title.map(t=>t.plain_text).join('')||'(제목 없음)';}catch(e){return '(제목 없음)';}};
+const sl=(p,n)=>{try{return p.properties[n].select?p.properties[n].select.name:'';}catch(e){return '';}};
+const st=p=>{try{return p.properties['상태'].status?p.properties['상태'].status.name:p.properties['상태'].select.name;}catch(e){return '할 일';}};
+async function load(){const j=await api('/databases/'+DBID+'/query','POST',{page_size:100,sorts:[{timestamp:'created_time',direction:'descending'}]});tasks=j.results.map((p,i)=>({id:p.id,n:i+1,t:tn(p),imp:sl(p,'중요도'),eme:sl(p,'긴급도'),time:sl(p,'시간대'),st:st(p)}));render();}
+async function add(t){await api('/pages','POST',{parent:{database_id:DBID},properties:{'할 일':{title:[{text:{content:t}}]}}});toast('추가됐어요 🌷');await load();}
+async function patch(id,pr){await api('/pages/'+id,'PATCH',{properties:pr});}
+function qo(t){const i=t.imp==='중요함',e=t.eme==='긴급함';if(!t.imp&&!t.eme)return 'order';return i?(e?'q1':'q2'):(e?'q3':'q4');}
+function ce(t,nu){
+  const d=document.createElement('div');d.className='card'+(t.st==='완료'?' done':'');d.draggable=true;
+  d.innerHTML='<span class="g">⋮⋮</span>'+(nu?'<span class="n">'+t.n+'</span>':'')+'<span class="t"></span><div class="a"><button data-a="d">완료</button><button data-a="x">삭제</button></div>';
+  d.querySelector('.t').textContent=t.t;
+  d.querySelectorAll('.a button').forEach(b=>b.onclick=async e=>{e.stopPropagation();
+    if(b.dataset.a==='d'){try{await patch(t.id,{'상태':{status:{name:'완료'}}});}catch(_){await patch(t.id,{'상태':{select:{name:'완료'}}});}toast('수고했어요 🎉');}
+    else{if(!confirm('삭제할까요?'))return;await api('/blocks/'+t.id,'DELETE');toast('삭제됐어요');}
+    await load();});
+  d.onclick=async()=>{const ns=t.st==='완료'?'할 일':'완료';try{await patch(t.id,{'상태':{status:{name:ns}}});}catch(_){try{await patch(t.id,{'상태':{select:{name:ns}}});}catch(__){}}await load();};
+  d.ondragstart=()=>{drag=t;d.classList.add('dragging');};
+  d.ondragend=()=>{d.classList.remove('dragging');drag=null;};
+  return d;
+}
+function render(){
+  $$('#pm .cards,#pf .cards').forEach(c=>c.innerHTML='');
+  const o=tasks.filter(t=>qo(t)==='order');
+  $('#oc').textContent=o.length;$('#oc2').textContent=o.length;
+  o.forEach(t=>{$('#ocards').appendChild(ce(t,1));$('#ocards2').appendChild(ce(t,1));});
+  ['q1','q2','q3','q4'].forEach(q=>{document.querySelector('#pm .quad[data-q="'+q+'"] .cards').append(...tasks.filter(t=>qo(t)===q).map(t=>ce(t)));});
+  document.querySelectorAll('#pf .tb').forEach(b=>{const el=b.querySelector('.cards');const l=tasks.filter(t=>t.time===b.dataset.t);b.querySelector('.c').textContent=l.length;l.forEach(t=>el.appendChild(ce(t)));if(!l.length)el.innerHTML='<div class="empty">드래그해서 넣어보세요 🤍</div>';});
+  rRev();
+}
+function rRev(){const d=tasks.filter(t=>t.st==='완료');$('#stT').textContent=tasks.length;$('#stD').textContent=d.length;$('#rl').innerHTML=d.length?d.map(t=>{const e=document.createElement('div');e.className='card done';e.innerHTML='<span class="t"></span>';e.querySelector('.t').textContent=t.t;return e.outerHTML;}).join(''):'<div class="empty">아직 완료한 일이 없어요 🤍</div>';}
+function dd(el,fn){el.ondragover=e=>{e.preventDefault();el.classList.add('dragover');};el.ondragleave=()=>el.classList.remove('dragover');el.ondrop=async e=>{e.preventDefault();el.classList.remove('dragover');if(!drag)return;await fn(drag);await load();};}
+$$('#pm .quad').forEach(q=>dd(q,async t=>{const m={q1:['중요함','긴급함'],q2:['중요함','안 긴급함'],q3:['안 중요함','긴급함'],q4:['안 중요함','안 긴급함']}[q.dataset.q];await patch(t.id,{'중요도':{select:{name:m[0]}},'긴급도':{select:{name:m[1]}}});toast('저장됐어요 🌷');}));
+dd($('.order[data-q="order"]'),async t=>{await patch(t.id,{'중요도':{select:null},'긴급도':{select:null}});});
+$$('#pf .tb').forEach(b=>dd(b,async t=>{await patch(t.id,{'시간대':{select:{name:b.dataset.t}}});toast('저장됐어요 🌷');}));
+const qa=()=>{const v=$('#qi').value.trim();if(!v)return;$('#qi').value='';add(v).catch(()=>toast('실패했어요 😢'));};
+$('#qa').onclick=qa;$('#qi').onkeydown=e=>{if(e.key==='Enter')qa();};
+async function boot(){if(!TK)return;$('#setup').classList.add('hidden');$('#main').classList.remove('hidden');$('#err').classList.add('hidden');try{await load();}catch(e){$('#setup').classList.remove('hidden');$('#main').classList.add('hidden');$('#err').textContent=String(e.message).startsWith('401')?'토큰을 확인해주세요 🤍':'DB를 찾을 수 없어요. 잠시 후 다시 시도해주세요.';$('#err').classList.remove('hidden');}}
+$('#go').onclick=()=>{const v=$('#tk').value.trim();if(!v){toast('토큰을 입력해주세요');return;}TK=v;try{localStorage.setItem('nf_token',v);}catch(e){}boot();};
+boot();
+</script>
+</body>
+</html>

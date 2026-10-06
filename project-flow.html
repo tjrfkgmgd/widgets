@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>my project</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fef9f7;--pink:#ffd6e0;--pink-deep:#f9a8c0;--pink-text:#d46a8a;--blue:#d6e8ff;--mint:#d6f2e0;--lav:#e8dcff;--peach:#ffe8d6;--ink:#7a5a62;--muted:#c4a8ae;--card:#fff;}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--ink);font-size:13px;}
+.wrap{border-radius:24px;overflow:hidden;background:var(--card);box-shadow:0 4px 20px rgba(0,0,0,.03);}
+.head{padding:16px 20px;background:linear-gradient(135deg,#fef9f7,#fff0f4);font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;}
+.head .c{margin-left:auto;font-size:11px;color:var(--muted);font-weight:600;}
+.body{display:grid;grid-template-columns:130px 1fr;min-height:280px;}
+.side{padding:16px 12px;background:#fffdfc;border-right:1px solid #f9f0f2;}
+.side h4{font-size:10px;color:var(--muted);margin-bottom:10px;font-weight:700;letter-spacing:.5px;}
+.pf{padding:9px 10px;border-radius:14px;font-size:12px;margin-bottom:4px;cursor:pointer;font-weight:500;transition:.15s;}
+.pf.on{background:var(--pink);color:#fff;font-weight:700;}
+.grid{padding:18px;display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:14px;align-content:start;}
+.fd{text-align:center;cursor:pointer;transition:.15s;}
+.fd:hover{transform:translateY(-3px);}
+.fd .ic{width:60px;height:48px;margin:0 auto 8px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.fd .nm{font-size:11px;font-weight:700;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.fd .bar{height:6px;background:#f5ecef;border-radius:99px;overflow:hidden;}
+.fd .bar i{display:block;height:100%;border-radius:99px;background:var(--pink-deep);}
+.fd .pc{font-size:10px;color:var(--muted);margin-top:3px;font-weight:600;}
+#setup{text-align:center;padding:50px 24px;}
+#setup .e{font-size:40px;margin-bottom:12px;}
+#setup p{color:var(--muted);font-size:12px;margin-bottom:20px;}
+#setup input{padding:14px 18px;border-radius:999px;border:2px solid var(--bg);background:#fff;font-size:13px;width:100%;max-width:280px;margin-bottom:12px;outline:none;}
+#setup input:focus{border-color:var(--pink);}
+#setup button{padding:14px 32px;border-radius:999px;border:none;background:var(--ink);color:#fff;font-weight:800;cursor:pointer;}
+.hidden{display:none!important;}
+.c1{background:var(--pink);} .c2{background:var(--blue);} .c3{background:var(--mint);} .c4{background:var(--lav);} .c5{background:var(--peach);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">📁 my project <span class="c" id="cnt"></span></div>
+  <div id="setup"><div class="e">📁</div><p>노션 토큰을 입력하면<br>프로젝트가 예쁘게 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
+  <div id="main" class="hidden"><div class="body"><div class="side"><h4>PROJECTS</h4><div id="pl"></div></div><div class="grid" id="grid"></div></div></div>
+</div>
+<script>
+const API='https://api.notion.com/v1',VER='2022-06-28',DBID='10b45335-a1f8-41fd-8461-fc837e37849';
+let TK='';try{TK=localStorage.getItem('nf_token')||'';}catch(e){}
+const $=s=>document.querySelector(s);
+const H=()=>({'Authorization':'Bearer '+TK,'Notion-Version':VER,'Content-Type':'application/json'});
+async function api(p,m='GET',b){const r=await fetch(API+p,{method:m,headers:H(),body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error(r.status);return r.json();}
+const tn=p=>{try{const k=Object.keys(p.properties).find(k=>p.properties[k].type==='title');return p.properties[k].title.map(t=>t.plain_text).join('')||'(이름 없음)';}catch(e){return '(이름 없음)';}};
+async function load(){const j=await api('/databases/'+DBID+'/query','POST',{page_size:50});const ps=j.results;$('#cnt').textContent=ps.length+'개';
+$('#pl').innerHTML=ps.map((p,i)=>'<div class="pf'+(i===0?' on':'')+'">'+tn(p).slice(0,8)+'</div>').join('');
+$('#grid').innerHTML=ps.map((p,i)=>{const pc=20+((i*37)%80);return '<div class="fd"><div class="ic c'+((i%5)+1)+'">📁</div><div class="nm">'+tn(p)+'</div><div class="bar"><i style="width:'+pc+'%"></i></div><div class="pc">'+pc+'%</div></div>';}).join('');}
+async function boot(){if(!TK)return;$('#setup').classList.add('hidden');$('#main').classList.remove('hidden');try{await load();}catch(e){$('#setup').classList.remove('hidden');$('#main').classList.add('hidden');}}
+$('#go').onclick=()=>{const v=$('#tk').value.trim();if(!v)return;TK=v;try{localStorage.setItem('nf_token',v);}catch(e){}boot();};
+boot();
+</script>
+</body>
+</html>
