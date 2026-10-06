@@ -62,9 +62,25 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 </div>
 <script>
 const API='https://api.notion.com/v1',VER='2022-06-28',DBID='c50c55d8-9436-4edb-5fab-3c76b5e166f';
-let TK='';try{TK=localStorage.getItem('nf_token')||'';if(TK)$('#tk').value=TK;}catch(e){}
+let TK='';try{TK=localStorage.getItem('nf_token')||'';}catch(e){}
 async function api(p,m='GET',b){const r=await fetch(API+p,{method:m,headers:{'Authorization':'Bearer '+TK,'Notion-Version':VER,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined});if(!r.ok)throw new Error(r.status);return r.json();}
-$('#go').onclick=()=>{const v=document.querySelector('#tk').value.trim();if(!v)return;TK=v;try{localStorage.setItem('nf_token',v);}catch(e){}location.reload();};
+function prop(p,n){if(!p||!p[n])return'';const v=p[n];if(v.title)return v.title.map(t=>t.plain_text).join('');if(v.rich_text)return v.rich_text.map(t=>t.plain_text).join('');if(v.select)return v.select.name||'';if(v.status)return v.status.name||'';if(v.date)return v.date.start||'';return'';}
+async function load(){if(!TK)return;try{
+const d=await api('/databases/'+DBID+'/query','POST',{filter:{property:'날짜',date:{equals:new Date().toISOString().slice(0,10)}},sorts:[{property:'시간대',direction:'ascending'}]});
+if(!d.results||!d.results.length)return;
+const items=d.results.map(r=>({t:prop(r.properties,'할 일')||'(제목 없음)',imp:prop(r.properties,'중요도'),urg:prop(r.properties,'긴급도'),time:prop(r.properties,'시간대')}));
+const ol=document.querySelector('.order');ol.innerHTML='<h3>ORDER</h3>'+items.map((it,i)=>'<div class="oitem"><span class="num">'+(i+1)+'</span><span class="t">'+it.t+'</span></div>').join('');
+const q={q1:[],q2:[],q3:[],q4:[]};
+items.forEach(it=>{const i=it.imp==='높음',u=it.urg==='높음';if(i&&u)q.q1.push(it);else if(i)q.q2.push(it);else if(u)q.q3.push(it);else q.q4.push(it);});
+const qc=c=>c.map(it=>'<div class="qcard"><div class="dot2"></div><div class="tt">'+it.t+'</div></div>').join('');
+document.querySelector('.q1').innerHTML='<h4>🔥 중요 & 긴급</h4>'+(qc(q.q1)||'<div style="font-size:10px;color:#c4a8ae">없음</div>');
+document.querySelector('.q2').innerHTML='<h4>⭐ 중요</h4>'+(qc(q.q2)||'<div style="font-size:10px;color:#c4a8ae">없음</div>');
+document.querySelector('.q3').innerHTML='<h4>⏰ 긴급</h4>'+(qc(q.q3)||'<div style="font-size:10px;color:#c4a8ae">없음</div>');
+document.querySelector('.q4').innerHTML='<h4>💭 기타</h4>'+(qc(q.q4)||'<div style="font-size:10px;color:#c4a8ae">없음</div>');
+document.querySelector('.conn').style.display='none';
+}catch(e){}}
+document.querySelector('#go').onclick=()=>{const v=document.querySelector('#tk').value.trim();if(!v)return;TK=v;try{localStorage.setItem('nf_token',v);}catch(e){}load();};
+load();
 </script>
 </body>
 </html>
