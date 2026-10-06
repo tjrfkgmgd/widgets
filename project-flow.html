@@ -36,9 +36,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 </head>
 <body>
 <div class="wrap">
-  <div class="head">📁 my project <span class="c" id="cnt"></span></div>
-  <div id="setup"><div class="e">📁</div><p>노션 토큰을 입력하면<br>프로젝트가 예쁘게 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
-  <div id="main" class="hidden"><div class="body"><div class="side"><h4>PROJECTS</h4><div id="pl"></div></div><div class="grid" id="grid"></div></div></div>
+  <div class="head">📁 my project <span class="c" id="cnt">3개</span></div>
+  <div id="main"><div class="body"><div class="side"><h4>PROJECTS</h4><div id="pl"><div class="pf on">SOMLUTION</div><div class="pf">PD FLOW</div><div class="pf">블로그</div></div></div><div class="grid" id="grid">
+    <div class="fd"><div class="ic c1">📁</div><div class="nm">SOMLUTION</div><div class="bar"><i style="width:65%"></i></div><div class="pc">65%</div></div>
+    <div class="fd"><div class="ic c2">📁</div><div class="nm">PD FLOW</div><div class="bar"><i style="width:40%"></i></div><div class="pc">40%</div></div>
+    <div class="fd"><div class="ic c3">📁</div><div class="nm">블로그</div><div class="bar"><i style="width:80%"></i></div><div class="pc">80%</div></div>
+  </div></div></div>
+  <div id="setup" class="hidden"><div class="e">📁</div><p>노션 토큰을 입력하면<br>프로젝트가 예쁘게 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
 </div>
 <script>
 const API='https://api.notion.com/v1',VER='2022-06-28',DBID='10b45335-a1f8-41fd-8461-fc837e37849';

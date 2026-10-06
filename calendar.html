@@ -33,9 +33,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 </head>
 <body>
 <div class="wrap">
-  <div class="head"><span class="t">📅 calendar</span><div class="nav"><button id="pv">‹</button><span id="mt"></span><button id="nx">›</button></div></div>
-  <div id="setup"><div class="e">📅</div><p>노션 토큰을 입력하면<br>일정이 달력에 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
-  <div id="main" class="hidden"><div class="cal" id="cal"></div></div>
+  <div class="head"><span class="t">📅 calendar</span><div class="nav"><button id="pv">‹</button><span id="mt">10월</span><button id="nx">›</button></div></div>
+  <div id="main"><div class="cal" id="cal">
+    <div class="dow">일</div><div class="dow">월</div><div class="dow">화</div><div class="dow">수</div><div class="dow">목</div><div class="dow">금</div><div class="dow">토</div>
+    <div class="day other"><div class="dn">28</div></div><div class="day other"><div class="dn">29</div></div><div class="day other"><div class="dn">30</div></div><div class="day"><div class="dn">1</div></div><div class="day"><div class="dn">2</div></div><div class="day"><div class="dn">3</div><div class="ev">미팅</div></div><div class="day"><div class="dn">4</div></div>
+    <div class="day"><div class="dn">5</div></div><div class="day today"><div class="dn">6</div><div class="ev">런칭</div></div><div class="day"><div class="dn">7</div></div><div class="day"><div class="dn">8</div></div><div class="day"><div class="dn">9</div></div><div class="day"><div class="dn">10</div><div class="ev">리뷰</div></div><div class="day"><div class="dn">11</div></div>
+  </div></div>
+  <div id="setup" class="hidden"><div class="e">📅</div><p>노션 토큰을 입력하면<br>일정이 달력에 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
 </div>
 <script>
 const API='https://api.notion.com/v1',VER='2022-06-28',DBID='c50c55d8-9436-4edb-5fab-3c76b5e166f';

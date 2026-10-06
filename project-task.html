@@ -36,8 +36,12 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 <body>
 <div class="wrap">
   <div class="head"><span class="t">✅ tasks</span><div class="tabs"><button class="on" data-f="t">today</button><button data-f="a">all</button></div></div>
-  <div id="setup"><div class="e">✅</div><p>노션 토큰을 입력하면<br>할 일이 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
-  <div id="main" class="hidden"><div class="list" id="list"></div></div>
+  <div id="main"><div class="list" id="list">
+    <div class="it"><div class="cb"></div><div class="tt">판매페이지 작성</div><div class="tm">오전</div></div>
+    <div class="it"><div class="cb"></div><div class="tt">가이드 작성</div><div class="tm">오후</div></div>
+    <div class="it done"><div class="cb">✓</div><div class="tt">공지 업로드</div><div class="tm">완료</div></div>
+  </div></div>
+  <div id="setup" class="hidden"><div class="e">✅</div><p>노션 토큰을 입력하면<br>할 일이 보여요 🤍</p><input type="password" id="tk" placeholder="Notion 토큰"><br><button id="go">연결하기 🩷</button></div>
 </div>
 <script>
 const API='https://api.notion.com/v1',VER='2022-06-28',DBID='c50c55d8-9436-4edb-5fab-3c76b5e166f';
